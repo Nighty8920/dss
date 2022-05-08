@@ -1,0 +1,16 @@
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+.env
+.bundle
+.vs
+.gem-cache/
+_gem-cache/
+.elasticsearch-data/
+node_modules/
+vendor/
+commit-msg.txt
+*.generated*
+.gemrc
+.gem/credentials

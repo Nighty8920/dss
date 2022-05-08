@@ -1,0 +1,9 @@
+#
+# Add more specific rules as needed.
+# The latest match takes precedence
+
+# Add DX as default reviewers
+* @SwedbankPay/dx
+
+# Tech writers should review changes to Markdown files
+.md @SwedbankPay/techwriters

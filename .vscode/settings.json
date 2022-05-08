@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSaveMode": "modifications",
+  "editor.rulers": [
+    80
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.markdownlint": true
+  }
+}

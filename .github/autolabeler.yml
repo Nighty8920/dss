@@ -1,0 +1,16 @@
+# Configuration file for https://github.com/apps/probot-autolabeler
+
+development:
+  - "*.js"
+  - "*.css"
+  - "*.html"
+  - "package*.json"
+  - "*.rb"
+  - "Gemfile"
+  - "Rakefile"
+  - ".gitignore"
+  - ".gitattributes"
+  - "*.sh"
+documentation: ["*.md", "assets"]
+legal: ["LICENSE*", "NOTICES*"]
+config: [".github", "CODEOWNERS", "CNAME", "*.yml", "*.yaml"]

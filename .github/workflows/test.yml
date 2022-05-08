@@ -1,0 +1,83 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  variables:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.variables.outputs.branch }}
+      repository_url: ${{ steps.variables.outputs.repository_url }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate variables
+        id: variables
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: .github/scripts/variables.sh
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: docker login
+        run: docker login https://docker.pkg.github.com -u SwedbankPay --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build
+        run: docker-compose run portal build --site-url=https://developer.swedbankpay.com \
+
+      - name: Upload site
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-site
+          path: _site
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: variables
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: docker login
+        run: docker login https://docker.pkg.github.com -u SwedbankPay --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify build
+        run: |
+          docker-compose run \
+            -e GITHUB_BRANCH=${{ needs.variables.outputs.branch }} \
+            -e GITHUB_REPOSITORY_URL=${{ needs.variables.outputs.repository_url }} \
+            portal build \
+            --verify \
+            --env=production \
+            --site-url=https://developer.swedbankpay.com \
+            --ignore-url http://restcookbook.com/Basics/loggingin/ \
+            --ignore-url https://blogs.oracle.com/java-platform-group/jdk-8-will-use-tls-12-as-default \
+            --ignore-url https://zend18.zendesk.com/hc/en-us/articles/219131697-HowTo-Implement-TLS-1-2-Support-with-the-cURL-PHP-Extension-in-Zend-Server
+
+      - name: Upload build output artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: verify-site
+          path: _site
+
+      - name: Verify absolute URL
+        run: grep 'https://developer.swedbankpay.com/' $(pwd)/_site/index.html
+
+      - name: Verify base URL
+        run: grep 'src="/assets/' $(pwd)/_site/index.html
+
+  remark-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - uses: reviewdog/action-remark-lint@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_error: true
+          remark_args: --frail --rc-path .remarkrc.yaml
+          level: warning
+      - run: npm run remark -- --frail --rc-path .remarkrc.yaml
