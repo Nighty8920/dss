@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'jekyll', '~> 4.2.0', group: :jekyll_plugins
+gem 'jekyll', '~> 4.3.1', group: :jekyll_plugins
 gem 'jemoji'
 
 # Neccessary to prevent Jekyll errors. See https://github.com/github/personal-website/issues/166
